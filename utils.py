@@ -116,7 +116,13 @@ def get_llm_response(chat_message):
     return llm_response
 
 def format_file_info(path: str, page_number: int | None = None) -> str:
-    """PDFのときだけ『（ページNo.X）』を付けて返す"""
-    if isinstance(path, str) and path.lower().endswith(".pdf") and page_number is not None:
-        return f"{path}（ページNo.{page_number}）"
+    """
+    ファイルパスを表示用に整形。
+    PDF かつ page_number が与えられたら、人が読む1始まりで表示する。
+    （0始まりのメタデータが来ても 1 に補正。すでに1始まりで渡されてもそのまま表示）
+    """
+    is_pdf = path.lower().endswith(".pdf")
+    if is_pdf and isinstance(page_number, int):
+        shown = page_number + 1 if page_number == 0 else page_number
+        return f"{path}（ページNo.{shown}）"
     return path
